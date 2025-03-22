@@ -3,6 +3,7 @@ stages:
 
 daily_automation_job:
   stage: test
+  image: maven:3.8.4-jdk-11 # Use Maven image with JDK 11
   script:
     - echo "Running automation tests..."
     - mvn clean test
