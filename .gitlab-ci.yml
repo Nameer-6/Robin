@@ -1,0 +1,13 @@
+stages:
+  - test
+
+daily_automation_job:
+  stage: test
+  script:
+    - echo "Running automation tests..."
+    - mvn clean test
+  artifacts:
+    paths:
+      - target/cucumber-reports/
+  only:
+    - schedules
