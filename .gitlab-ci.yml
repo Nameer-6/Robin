@@ -3,17 +3,17 @@ stages:
 
 daily_automation_job:
   stage: test
-  image: ruby:3.1  # Use your existing ruby image or switch to a base image
+  image: debian:bullseye-slim  # Use a minimal Debian image (you can switch to ubuntu or any other base image)
   script:
     - echo "Updating packages and installing Maven and JDK..."
     - apt-get update -y
-    - apt-get install -y openjdk-11-jdk maven  # Install Maven and OpenJDK 11
+    - apt-get install -y openjdk-11-jdk maven  # Ensure openjdk-11-jdk and maven are installed
     - java -version  # Verify Java version
     - mvn -v  # Verify Maven version
     - echo "Running automation tests..."
-    - mvn clean test  # Run your tests
+    - mvn clean test  # Run the tests
   artifacts:
     paths:
       - target/cucumber-reports/
   only:
-    - schedules  # Make sure it runs only on a schedule
+    - schedules  # Ensure the job runs based on your schedule
