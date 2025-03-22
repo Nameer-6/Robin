@@ -3,11 +3,10 @@ stages:
 
 daily_automation_job:
   stage: test
-  image: ruby:3.1  # Keep your original image
+  image: maven:3.8.6-openjdk-11  # Official Maven Docker image
   script:
     - echo "Running automation tests..."
-    - apt-get update && apt-get install -y maven  # Install Maven
-    - mvn clean test
+    - mvn clean test  # Run the tests
   artifacts:
     paths:
       - target/cucumber-reports/
