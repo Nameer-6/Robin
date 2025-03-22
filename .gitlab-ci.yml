@@ -3,13 +3,17 @@ stages:
 
 daily_automation_job:
   stage: test
-  image: openjdk:11  # OpenJDK 11 image
+  image: ruby:3.1  # Use your existing ruby image or switch to a base image
   script:
-    - echo "Running automation tests using TestNG..."
-    - javac -d bin src/test/java/runners/TestRunner.java  # Compile TestNG runner
-    - java -cp "src/test/resources:bin" runners.TestRunner  # Run TestNG tests
+    - echo "Updating packages and installing Maven and JDK..."
+    - apt-get update -y
+    - apt-get install -y openjdk-11-jdk maven  # Install Maven and OpenJDK 11
+    - java -version  # Verify Java version
+    - mvn -v  # Verify Maven version
+    - echo "Running automation tests..."
+    - mvn clean test  # Run your tests
   artifacts:
     paths:
       - target/cucumber-reports/
   only:
-    - schedules  # Ensure the job runs based on your schedule
+    - schedules  # Make sure it runs only on a schedule
