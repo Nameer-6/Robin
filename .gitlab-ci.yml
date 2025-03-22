@@ -3,10 +3,11 @@ stages:
 
 daily_automation_job:
   stage: test
-  image: maven:3.8.6-openjdk-11  # Use a Maven image with JDK 11 pre-installed
+  image: openjdk:11  # OpenJDK 11 image
   script:
-    - echo "Running automation tests..."
-    - mvn clean test  # Run the tests
+    - echo "Running automation tests using TestNG..."
+    - javac -d bin src/test/java/runners/TestRunner.java  # Compile TestNG runner
+    - java -cp "src/test/resources:bin" runners.TestRunner  # Run TestNG tests
   artifacts:
     paths:
       - target/cucumber-reports/
