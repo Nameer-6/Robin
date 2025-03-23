@@ -3,14 +3,12 @@ stages:
 
 run_login_feature:
   stage: test
-  image: maven:3.8.7-openjdk-11  # Includes both Maven and JDK 11
+  image: maven:3.8.6-openjdk-11
   script:
     - echo "Running login.feature test..."
-    - mvn clean test -Dcucumber.filter.tags="@login"  # Optional tag-based filter
-    # OR run specific feature file directly (if configured via runner)
-    - mvn test -Dcucumber.features=src/test/resources/features/login.feature
+    - mvn clean test -Dcucumber.features=src/test/resources/features/login.feature
   artifacts:
     paths:
       - target/cucumber-reports/
   only:
-    - schedules  # or remove this to allow manual pipeline runs
+    - schedules  # Remove this if you want to trigger manually
