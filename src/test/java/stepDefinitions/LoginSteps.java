@@ -286,17 +286,49 @@ public class LoginSteps {
         System.out.println("Clicked on OK button.");
     }
 
-    @And("I navigate to Billing-OP Receipts page")
+    @When("I navigate to Billing-OP Receipts page")
     public void iNavigateToBillingOpReceiptsPage() {
         loginPage.navigateToBillingOpReceiptsPage();
         System.out.println("Navigated to Billing-OP Receipts page.");
     }
 
-    @And("I click on created visit")
+    @When("I click on created visit")
     public void iClickOnCreatedVisit() {
         // Click the created visit using the generated first and last name
         loginPage.clickCreatedVisit();
     }
 
+    @And("I select payment type cash")
+    public void iSelectPaymentTypeCash() {
+        loginPage.selectPaymentTypeCash(); // no params
+    }
 
+    @And("I type 10000 amount in Payment Amount field")
+    public void i_type_10000_amount_in_payment_amount_field() {
+        loginPage.enterPaymentAmount10000(); // no params
+    }
+    @And("I select payment type Cheque")
+    public void i_select_payment_type_cheque() {
+        loginPage.selectPaymentTypeCheque(); // no params
+    }
+
+    @And("I type 0 amount in Payment Amount field")
+    public void i_type_0_amount_in_payment_amount_field() {
+        loginPage.enterPaymentAmount0(); // no params
+    }
+
+    @And("I click on Generate Receipt Button")
+    public void i_click_on_generate_receipt_button() {
+        loginPage.clickGenerateReceiptButton();
+        System.out.println("Clicked on 'Generate Receipt & Invoice' button.");
+    }
+
+
+    @Then("I should see Receipt generated success message")
+    public void i_should_see_success_message() {
+        loginPage.verifyReceiptSuccessMessage();
+        System.out.println("Verified success message: 'Receipt generated Successfully'.");
+        loginPage.clickOkButton();
+        System.out.println("Clicked on OK button.");
+    }
 }

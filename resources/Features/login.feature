@@ -35,5 +35,13 @@ Feature: Complete Patient Journey with Billing
     When I click on Insert visit button
     And I click on Mark As Ready To Bill button
     Then I should see success message
-    And I navigate to Billing-OP Receipts page
+    When I navigate to Billing-OP Receipts page
     And I click on created visit
+    And I select payment type cash
+    And I type 10000 amount in Payment Amount field
+    And I select payment type Cheque
+    And I type 0 amount in Payment Amount field
+    And I click on Generate Receipt Button
+    Then I should see Receipt generated success message
+
+

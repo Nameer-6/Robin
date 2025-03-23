@@ -92,6 +92,13 @@ public class LoginPage {
     private By okButton = By.xpath("//span[text()='OK']");
     private By billingLink = By.xpath("//a[span[text()='Billing']]");
     private By opReceiptsLink = By.xpath("//a[span[text()='OP Receipts']]");
+    private By paymentTypeDropdown = By.xpath("//td[@class='opcol4']//label[text()='Card Payment']/following-sibling::div//span[@class='ui-icon ui-icon-triangle-1-s ui-c']");
+    private By paymentAmountField = By.xpath("//input[@id='paymentForm:payment:0:ForeigncurrencyAmount_input']");
+    private By generateReceiptButton = By.xpath("//button[span[text()='Generate Receipt & Invoice']]");
+    private By receiptSuccessMessage = By.xpath("//span[text()='Receipt generated Successfully']");
+
+
+
 
     // Methods
     public void enterUsername(String username) {
@@ -495,25 +502,67 @@ public class LoginPage {
         }
     }
 
-//    public void clickCreatedVisit() {
-//        // Dynamic locator with generated first and last name
-//        createdVisitLink = By.xpath("//a[text()='" + randomFirstName + " " + randomLastName + "']");
-//
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-//        wait.until(ExpectedConditions.elementToBeClickable(createdVisitLink));
-//        driver.findElement(createdVisitLink).click();
-//        System.out.println("Clicked on created visit: " + randomFirstName + " " + randomLastName);
-//    }
-
     public void clickCreatedVisit() {
         String createdVisitXpath = "//a[text()='" + randomFirstName + " " + randomLastName + "']";
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(createdVisitXpath)));
         driver.findElement(By.xpath(createdVisitXpath)).click();
         System.out.println("Clicked on created visit: " + randomFirstName + " " + randomLastName);
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void selectPaymentTypeCash() {
+        driver.findElement(paymentTypeDropdown).click();
+        String hardcodedType = "Cash";
+        By option = By.xpath("//li[text()='" + hardcodedType + "']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(option));
+        driver.findElement(option).click();
+    }
+
+    public void enterPaymentAmount10000() {
+        String hardcodedAmount = "10000";
+        WebElement amountInput = driver.findElement(paymentAmountField);
+        amountInput.clear();
+        amountInput.sendKeys(hardcodedAmount);
+    }
+
+    public void selectPaymentTypeCheque() {
+        driver.findElement(paymentTypeDropdown).click();
+        String hardcodedType = "Cash";
+        By option = By.xpath("//li[text()='" + hardcodedType + "']");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(option));
+        driver.findElement(option).click();
+    }
+
+    public void enterPaymentAmount0() {
+        String hardcodedAmount = "0";
+        WebElement amountInput = driver.findElement(paymentAmountField);
+        amountInput.clear();
+        amountInput.sendKeys(hardcodedAmount);
     }
 
 
+    public void clickGenerateReceiptButton() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(generateReceiptButton));
+        driver.findElement(generateReceiptButton).click();
+    }
 
+    public void verifyReceiptSuccessMessage() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(receiptSuccessMessage));
+    }
 
 }
+
+
+
+
+
