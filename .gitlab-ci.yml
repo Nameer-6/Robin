@@ -11,5 +11,9 @@ run_login_feature:
     - mvn -version
     - mvn clean test -Dcucumber.features=src/test/resources/features/login.feature
   artifacts:
+    when: always  # ensure even on failure, artifacts get uploaded
     paths:
       - target/cucumber-reports/
+      - target/cucumber-reports/html/
+    reports:
+      junit: target/cucumber-reports/Cucumber.xml
