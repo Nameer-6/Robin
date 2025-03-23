@@ -1,19 +1,16 @@
 stages:
   - test
 
-daily_automation_job:
+run_login_feature:
   stage: test
-  image: debian:bullseye-slim  # Use a minimal Debian image (you can switch to ubuntu or any other base image)
+  image: maven:3.8.7-openjdk-11  # Includes both Maven and JDK 11
   script:
-    - echo "Updating packages and installing Maven and JDK..."
-    - apt-get update -y
-    - apt-get install -y openjdk-11-jdk maven  # Ensure openjdk-11-jdk and maven are installed
-    - java -version  # Verify Java version
-    - mvn -v  # Verify Maven version
-    - echo "Running automation tests..."
-    - mvn clean test  # Run the tests
+    - echo "Running login.feature test..."
+    - mvn clean test -Dcucumber.filter.tags="@login"  # Optional tag-based filter
+    # OR run specific feature file directly (if configured via runner)
+    - mvn test -Dcucumber.features=src/test/resources/features/login.feature
   artifacts:
     paths:
       - target/cucumber-reports/
   only:
-    - schedules  # Ensure the job runs based on your schedule
+    - schedules  # or remove this to allow manual pipeline runs
