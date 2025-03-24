@@ -18,7 +18,6 @@
 #    reports:
 #      junit: target/cucumber-reports/Cucumber.xml
 
-
 stages:
   - test
   - report
@@ -29,9 +28,9 @@ run_login_feature:
   before_script:
     - apt-get update && apt-get install -y maven
   script:
-    - echo "Running login.feature test..."
+    - echo "🔍 Running login.feature test..."
     - mvn -version
-    - mvn clean test -Dcucumber.features=src/test/resources/features/login.feature
+    - mvn clean test "-DsuiteXmlFile=testng.xml"
   artifacts:
     when: always
     paths:
@@ -47,9 +46,11 @@ generate_report:
   before_script:
     - apt-get update && apt-get install -y maven
   script:
-    - mvn exec:java -Dexec.mainClass="utils.ReportGenerator"
+    - echo "📊 Generating enhanced Cucumber report..."
+    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator"
   dependencies:
     - run_login_feature
   artifacts:
+    when: always
     paths:
       - target/enhanced-report/
