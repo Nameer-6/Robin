@@ -58,30 +58,22 @@ package utils;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 public class DriverManager {
-
     private static WebDriver driver;
 
     public static WebDriver getDriver() {
         if (driver == null) {
-            System.out.println("Initializing EdgeDriver using WebDriverManager...");
+            WebDriverManager.chromedriver().setup();
 
-            // Automatically download correct EdgeDriver binary
-            WebDriverManager.edgedriver().setup();
-
-            EdgeOptions options = new EdgeOptions();
-            options.addArguments("--disable-extensions");
-            options.addArguments("--disable-gpu");
-            options.addArguments("--inprivate");
+            ChromeOptions options = new ChromeOptions();
+//            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--start-maximized");
 
-            driver = new EdgeDriver(options);
-            System.out.println("EdgeDriver initialized successfully.");
+            driver = new ChromeDriver(options);
         }
         return driver;
     }
@@ -90,7 +82,7 @@ public class DriverManager {
         if (driver != null) {
             driver.quit();
             driver = null;
-            System.out.println("EdgeDriver closed.");
         }
     }
 }
+
