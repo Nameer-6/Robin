@@ -37,21 +37,27 @@
 
 run_login_feature:
   stage: test
-  image: eclipse-temurin:20-jdk
+  image: curlimages/curl:latest
   before_script:
-    - apt-get update && apt-get install -y maven wget curl unzip
-    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    - apt install -y ./google-chrome-stable_current_amd64.deb
+    - apt-get update && apt-get install -y jq
   script:
-    - echo "🧪 Running tests with Chrome in headless mode..."
-    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
-    - echo "📝 Showing full failure logs:"
-    - cat target/surefire-reports/*.txt
-    - - curl -k 'https://dev-robin-uae.santechture.com/ROBIN/'
+    # Step 1: Get OAuth2 access token (use your client details here)
+    - |
+      response=$(curl -X POST https://dev-keycloak.santechture.com/realms/QATAR/protocol/openid-connect/token \
+        -d "grant_type=client_credentials" \
+        -d "client_id=robin-qtr" \
+        -d "client_secret=YOUR_CLIENT_SECRET" \
+        -d "scope=openid")
+      access_token=$(echo $response | jq -r '.access_token')
+
+    # Step 2: Use the access token to call the protected URL
+    - curl -H "Authorization: Bearer $access_token" 'https://dev-robin-uae.santechture.com/ROBIN/'
+
   artifacts:
     when: always
     paths:
       - target/cucumber.json
       - target/surefire-reports/
+
 
 
