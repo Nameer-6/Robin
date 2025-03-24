@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.Random;
+import org.openqa.selenium.Keys;
 
 import java.util.UUID;
 
@@ -21,7 +22,6 @@ public class LoginPage {
     }
     private String randomFirstName;
     private String randomLastName;
-    private By createdVisitLink;
 
     // Locators
     private By loginHeader = By.xpath("//h1[contains(text(),'Sign in to your account')]");
@@ -92,8 +92,9 @@ public class LoginPage {
     private By okButton = By.xpath("//span[text()='OK']");
     private By billingLink = By.xpath("//a[span[text()='Billing']]");
     private By opReceiptsLink = By.xpath("//a[span[text()='OP Receipts']]");
-    private By paymentTypeDropdown = By.xpath("//td[@class='opcol4']//label[text()='Card Payment']/following-sibling::div//span[@class='ui-icon ui-icon-triangle-1-s ui-c']");
+    private By paymentTypeDropdown = By.xpath("//div[@id='paymentForm:payment:0:sfsfsdf']");
     private By paymentAmountField = By.xpath("//input[@id='paymentForm:payment:0:ForeigncurrencyAmount_input']");
+    private By paymentAmountField_cheque = By.xpath("//input[@id='paymentForm:payment:0:Amount_input']");
     private By generateReceiptButton = By.xpath("//button[span[text()='Generate Receipt & Invoice']]");
     private By receiptSuccessMessage = By.xpath("//span[text()='Receipt generated Successfully']");
 
@@ -523,6 +524,11 @@ public class LoginPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.elementToBeClickable(option));
         driver.findElement(option).click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void enterPaymentAmount10000() {
@@ -530,22 +536,48 @@ public class LoginPage {
         WebElement amountInput = driver.findElement(paymentAmountField);
         amountInput.clear();
         amountInput.sendKeys(hardcodedAmount);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void selectPaymentTypeCheque() {
         driver.findElement(paymentTypeDropdown).click();
-        String hardcodedType = "Cash";
+        String hardcodedType = "Cheque";
         By option = By.xpath("//li[text()='" + hardcodedType + "']");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.elementToBeClickable(option));
         driver.findElement(option).click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void enterPaymentAmount0() {
         String hardcodedAmount = "0";
-        WebElement amountInput = driver.findElement(paymentAmountField);
-        amountInput.clear();
+        WebElement amountInput = driver.findElement(paymentAmountField_cheque);
+
+        // Click the input field to focus
+        amountInput.click();
+
+        // Select all the content (this simulates Ctrl+A)
+        amountInput.sendKeys(Keys.CONTROL + "a");
+
+        // Clear the field (this simulates pressing the BACKSPACE key)
+        amountInput.sendKeys(Keys.SPACE);
+
+        // Enter the new hardcoded value
         amountInput.sendKeys(hardcodedAmount);
+
+        try {
+            Thread.sleep(2000); // Optional delay (try to avoid this in real tests, use WebDriverWait instead)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -553,6 +585,11 @@ public class LoginPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         wait.until(ExpectedConditions.elementToBeClickable(generateReceiptButton));
         driver.findElement(generateReceiptButton).click();
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void verifyReceiptSuccessMessage() {
