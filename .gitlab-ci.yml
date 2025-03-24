@@ -47,6 +47,7 @@ run_login_feature:
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
     - echo "📝 Showing full failure logs:"
     - cat target/surefire-reports/*.txt
+    - - curl -k 'https://dev-robin-uae.santechture.com/ROBIN/'
   artifacts:
     when: always
     paths:
