@@ -20,7 +20,7 @@ public class DriverManager {
             WebDriverManager.chromedriver().setup();
 
             ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless=new");
+            options.addArguments("--headless=chrome");
             options.addArguments("--disable-gpu");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage"); // <— key fix!
