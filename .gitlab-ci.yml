@@ -35,60 +35,23 @@
 #    expire_in: 1 week
 #
 
-#run_login_feature:
-#  stage: test
-#  image: eclipse-temurin:20-jdk
-#  before_script:
-#    - apt-get update && apt-get install -y maven wget curl unzip
-#    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-#    - apt install -y ./google-chrome-stable_current_amd64.deb
-#  script:
-#    - echo "🧪 Running tests with Chrome in headless mode..."
-#    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
-#    - echo "📝 Showing full failure logs:"
-#    - cat target/surefire-reports/*.txt
-#    - - curl -k 'https://dev-robin-uae.santechture.com/ROBIN/'
-#  artifacts:
-#    when: always
-#    paths:
-#      - target/cucumber.json
-#      - target/surefire-reports/
-
-
-# Confirm Access from Another Linux Machine (Option 3)
-check-access:
-  stage: test
-  image: curlimages/curl:latest
-  script:
-    - echo "🌐 Confirming URL accessibility from another Linux machine..."
-    - curl -Iv -k https://dev-robin-uae.santechture.com/ROBIN/ || echo "❌ URL not reachable"
-  artifacts:
-    when: always
-    paths:
-      - target/curl-output.txt
-    expire_in: 1 week
-
-# Run Login Feature (Main Test) with Chrome (Option 1: Use a Self-Hosted Runner)
 run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y maven wget curl unzip gnupg
+    - apt-get update && apt-get install -y maven wget curl unzip
     - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     - apt install -y ./google-chrome-stable_current_amd64.deb
-    - apt-get install -y chromium-driver
   script:
-    - echo "🌐 Testing raw URL with curl..."
-    - curl -Iv -k https://dev-robin-uae.santechture.com/ROBIN/ || echo "❌ URL not reachable"
-    - echo "🧪 Running tests with Chrome headless..."
+    - echo "🧪 Running tests with Chrome in headless mode..."
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
-    - echo "📝 Showing test failure logs..."
+    - echo "📝 Showing full failure logs:"
     - cat target/surefire-reports/*.txt
+    - - curl -k 'https://dev-robin-uae.santechture.com/ROBIN/'
   artifacts:
     when: always
     paths:
       - target/cucumber.json
       - target/surefire-reports/
-      - target/failure-screenshot.png
-    expire_in: 1 week
+
 

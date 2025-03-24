@@ -32,7 +32,9 @@ public class LoginSteps {
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+//        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+          String url = "https://google.com";
+
         // ✅ Wait for page to fully load
         new WebDriverWait(driver, Duration.ofSeconds(60)).until(
                 webDriver -> ((JavascriptExecutor) webDriver)
