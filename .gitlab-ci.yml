@@ -1,63 +1,37 @@
-#stages:
-#  - test
-#  - report
-#
-#run_login_feature:
-#  stage: test
-#  image: eclipse-temurin:20-jdk
-#  before_script:
-#    - apt-get update && apt-get install -y maven
-#  script:
-#    - echo "🧪 Running login.feature test from resources/Features..."
-#    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
-#    - ls -lah target/
-#  artifacts:
-#    when: always
-#    paths:
-#      - target/cucumber.json
-#      - target/surefire-reports/
-#    expire_in: 1 week
-#
-#generate_report:
-#  stage: report
-#  image: eclipse-temurin:20-jdk
-#  before_script:
-#    - apt-get update && apt-get install -y maven
-#  script:
-#    - echo "📊 Generating enhanced HTML report..."
-#    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator" || true
-#  dependencies:
-#    - run_login_feature
-#  artifacts:
-#    when: always
-#    paths:
-#      - target/enhanced-report/
-#    expire_in: 1 week
-#
+stages:
+  - test
+  - report
 
 run_login_feature:
   stage: test
-  image: curlimages/curl:latest
+  image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y jq
+    - apt-get update && apt-get install -y maven
   script:
-    # Step 1: Get OAuth2 access token (use your client details here)
-    - |
-      response=$(curl -X POST https://dev-keycloak.santechture.com/realms/QATAR/protocol/openid-connect/token \
-        -d "grant_type=client_credentials" \
-        -d "client_id=robin-qtr" \
-        -d "client_secret=YOUR_CLIENT_SECRET" \
-        -d "scope=openid")
-      access_token=$(echo $response | jq -r '.access_token')
-
-    # Step 2: Use the access token to call the protected URL
-    - curl -H "Authorization: Bearer $access_token" 'https://dev-robin-uae.santechture.com/ROBIN/'
-
+    - echo "🧪 Running login.feature test from resources/Features..."
+    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
+    - ls -lah target/
   artifacts:
     when: always
     paths:
       - target/cucumber.json
       - target/surefire-reports/
+    expire_in: 1 week
 
+generate_report:
+  stage: report
+  image: eclipse-temurin:20-jdk
+  before_script:
+    - apt-get update && apt-get install -y maven
+  script:
+    - echo "📊 Generating enhanced HTML report..."
+    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator" || true
+  dependencies:
+    - run_login_feature
+  artifacts:
+    when: always
+    paths:
+      - target/enhanced-report/
+    expire_in: 1 week
 
 
