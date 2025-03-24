@@ -15,6 +15,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import java.util.Map;
+import org.openqa.selenium.JavascriptExecutor;
+
 
 public class LoginSteps {
     WebDriver driver;
@@ -31,6 +33,11 @@ public class LoginSteps {
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
         String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+        // ✅ Wait for page to fully load
+        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+                webDriver -> ((JavascriptExecutor) webDriver)
+                        .executeScript("return document.readyState").equals("complete"));
+
         System.out.println("Opening URL: " + url);
         driver.get(url);
 
