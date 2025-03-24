@@ -15,28 +15,28 @@
     </properties>
 
     <dependencies>
-        <!-- Selenium WebDriver (Updated to latest stable version) -->
+        <!-- Selenium WebDriver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.15.0</version> <!-- Updated version -->
+            <version>4.15.0</version>
         </dependency>
 
-        <!-- Cucumber Java (Updated to version 7.x) -->
+        <!-- Cucumber Java -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>7.14.0</version> <!-- Updated version -->
+            <version>7.14.0</version>
         </dependency>
 
-        <!-- Cucumber TestNG (or JUnit) -->
+        <!-- Cucumber TestNG -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-testng</artifactId>
-            <version>7.14.0</version> <!-- Updated version -->
+            <version>7.14.0</version>
         </dependency>
 
-        <!-- TestNG Dependency -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -44,25 +44,55 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- WebDriver Manager (to auto-manage browser drivers) -->
+        <!-- WebDriverManager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.6.3</version> <!-- No change -->
+            <version>5.6.3</version>
         </dependency>
 
-        <!-- Cucumber Core (Important to match with the same version as cucumber-java) -->
+        <!-- Cucumber Core -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-core</artifactId>
-            <version>7.14.0</version> <!-- Updated version -->
+            <version>7.14.0</version>
         </dependency>
 
-        <!-- Cucumber Gherkin (Required for Gherkin syntax) -->
+        <!-- Cucumber Gherkin -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>gherkin</artifactId>
-            <version>26.2.0</version> <!-- Make sure this is compatible with the other Cucumber dependencies -->
+            <version>26.2.0</version>
+        </dependency>
+
+        <!-- Cucumber Reporting -->
+        <dependency>
+            <groupId>net.masterthought</groupId>
+            <artifactId>cucumber-reporting</artifactId>
+            <version>5.7.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Exec Maven Plugin for running ReportGenerator -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>utils.ReportGenerator</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

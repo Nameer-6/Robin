@@ -1,5 +1,27 @@
+#stages:
+#  - test
+#
+#run_login_feature:
+#  stage: test
+#  image: eclipse-temurin:20-jdk
+#  before_script:
+#    - apt-get update && apt-get install -y maven
+#  script:
+#    - echo "Running login.feature test..."
+#    - mvn -version
+#    - mvn clean test -Dcucumber.features=src/test/resources/features/login.feature
+#  artifacts:
+#    when: always  # ensure even on failure, artifacts get uploaded
+#    paths:
+#      - target/cucumber-reports/
+#      - target/cucumber-reports/html/
+#    reports:
+#      junit: target/cucumber-reports/Cucumber.xml
+
+
 stages:
   - test
+  - report
 
 run_login_feature:
   stage: test
@@ -11,9 +33,23 @@ run_login_feature:
     - mvn -version
     - mvn clean test -Dcucumber.features=src/test/resources/features/login.feature
   artifacts:
-    when: always  # ensure even on failure, artifacts get uploaded
+    when: always
     paths:
       - target/cucumber-reports/
-      - target/cucumber-reports/html/
+      - target/cucumber.json
+      - target/enhanced-report/
     reports:
       junit: target/cucumber-reports/Cucumber.xml
+
+generate_report:
+  stage: report
+  image: eclipse-temurin:20-jdk
+  before_script:
+    - apt-get update && apt-get install -y maven
+  script:
+    - mvn exec:java -Dexec.mainClass="utils.ReportGenerator"
+  dependencies:
+    - run_login_feature
+  artifacts:
+    paths:
+      - target/enhanced-report/
