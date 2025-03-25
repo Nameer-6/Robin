@@ -7,6 +7,7 @@ run_login_feature:
   image: eclipse-temurin:20-jdk
   before_script:
     - apt-get update && apt-get install -y maven
+    - curl -I https://dev-robin-uae.santechture.com/ROBIN/ || exit 1  # Check if the URL is accessible
   script:
     - echo "🧪 Running login.feature test from resources/Features..."
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
@@ -33,5 +34,3 @@ generate_report:
     paths:
       - target/enhanced-report/
     expire_in: 1 week
-
-
