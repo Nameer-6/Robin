@@ -6,14 +6,7 @@ run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y maven ca-certificates wget dnsutils  # Install dnsutils for nslookup
-    - update-ca-certificates
-    - |
-      # Check DNS resolution and retry logic for URL access
-      nslookup dev-robin-uae.santechture.com || exit 1  # Ensure DNS resolution works
-      for i in {1..5}; do
-        wget --spider --timeout=60 https://dev-robin-uae.santechture.com/ROBIN/ && break || sleep 10
-      done
+    - apt-get update && apt-get install -y maven
   script:
     - echo "🧪 Running login.feature test from resources/Features..."
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
@@ -40,3 +33,6 @@ generate_report:
     paths:
       - target/enhanced-report/
     expire_in: 1 week
+
+
+
