@@ -6,7 +6,7 @@ run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y maven ca-certificates wget
+    - apt-get update && apt-get install -y maven ca-certificates wget dnsutils  # Install dnsutils for nslookup
     - update-ca-certificates
     - |
       # Check DNS resolution and retry logic for URL access
