@@ -6,13 +6,17 @@ run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y maven
+    - apt-get update && apt-get install -y maven wget ca-certificates
+    - update-ca-certificates
     - |
+      # Check DNS resolution and retry logic for URL access
+      nslookup dev-robin-uae.santechture.com || exit 1  # Check DNS resolution
       for i in {1..5}; do
-        curl -I https://dev-robin-uae.santechture.com/ROBIN/ && break || sleep 10
+        wget --spider --timeout=60 https://dev-robin-uae.santechture.com/ROBIN/ && break || sleep 10
       done
-    - exit 1 # Explicitly exit with a failure if curl fails after retries
-  
+    - echo "🧪 Running login.feature test from resources/Features..."
+    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
+    - ls -lah target/
   script:
     - echo "🧪 Running login.feature test from resources/Features..."
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
