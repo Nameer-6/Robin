@@ -17,8 +17,6 @@ run_login_feature:
       - target/cucumber.json
       - target/surefire-reports/
     expire_in: 1 week
-  # Ensure that the artifacts are only collected if the job has run successfully
-  allow_failure: false  # Set this to true if you want to allow failures without failing the pipeline
 
 generate_report:
   stage: report
@@ -35,5 +33,6 @@ generate_report:
     paths:
       - target/enhanced-report/
     expire_in: 1 week
-  allow_failure: false  # Ensure report generation only if the tests pass
+
+
 
