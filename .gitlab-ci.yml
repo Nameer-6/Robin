@@ -6,6 +6,13 @@ run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
+    - apt-get update && apt-get install -y maven
+    - |
+      for i in {1..5}; do
+        curl -I https://dev-robin-uae.santechture.com/ROBIN/ && break || sleep 10
+      done
+    - exit 1 # Explicitly exit with a failure if curl fails after retries
+  
   script:
     - echo "🧪 Running login.feature test from resources/Features..."
     - mvn clean test "-DsuiteXmlFile=testng.xml" || true
