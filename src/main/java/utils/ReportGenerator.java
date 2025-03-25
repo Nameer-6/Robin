@@ -15,7 +15,7 @@ public class ReportGenerator {
 
     public static void generateReport() {
         File reportOutputDirectory = new File("target/enhanced-report");
-        List<String> jsonFiles = Arrays.asList("target/cucumber.json");
+        List<String> jsonFiles = Arrays.asList("target/cucumber.json");//test
 
         Configuration config = new Configuration(reportOutputDirectory, "RobinAutomation");
         config.setBuildNumber("1.0");
