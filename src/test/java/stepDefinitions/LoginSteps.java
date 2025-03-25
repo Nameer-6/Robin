@@ -32,7 +32,7 @@ public class LoginSteps {
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        String url = "https://google.com";
+        String url = "//https://dev-robin-uae.santechture.com/ROBIN/";
         //"//https://dev-robin-uae.santechture.com/ROBIN/";
 
 
