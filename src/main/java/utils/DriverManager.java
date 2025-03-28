@@ -20,13 +20,16 @@ public class DriverManager {
             WebDriverManager.chromedriver().setup();
 
             ChromeOptions options = new ChromeOptions();
-           // options.addArguments("--headless=chrome");
+            options.addArguments("--headless=new"); // Improved headless mode
             options.addArguments("--disable-gpu");
             options.addArguments("--no-sandbox");
-            options.addArguments("--disable-dev-shm-usage"); // <— key fix!
+            options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-extensions");
             options.addArguments("--disable-software-rasterizer");
             options.addArguments("--window-size=1920,1080");
+
+            // 🔥 FIX: Ensure unique user data directory
+            options.addArguments("--user-data-dir=/tmp/chrome-user-data");
 
             driver = new ChromeDriver(options);
             driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(90));
@@ -46,12 +49,12 @@ public class DriverManager {
 
     public static void takeScreenshot(String fileName) {
         if (driver != null) {
-            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             try {
+                File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 File targetFile = new File("target/" + fileName);
                 FileUtils.copyFile(scrFile, targetFile);
                 System.out.println("📸 Screenshot saved at: " + targetFile.getAbsolutePath());
-            } catch (IOException e) {
+            } catch (IOException | WebDriverException e) {
                 System.err.println("❌ Failed to save screenshot: " + e.getMessage());
             }
         }
