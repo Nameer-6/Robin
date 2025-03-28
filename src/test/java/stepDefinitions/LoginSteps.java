@@ -29,30 +29,77 @@ public class LoginSteps {
         loginPage = new LoginPage(driver);
     }
 
+//
+//    @Given("I am on the login page")
+//    public void iAmOnTheLoginPage() {
+//        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+//        //"https://dev-robin-uae.santechture.com/ROBIN/";
+//
+//
+//        // ✅ Wait for page to fully load
+//        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+//                webDriver -> ((JavascriptExecutor) webDriver)
+//                        .executeScript("return document.readyState").equals("complete"));
+//
+//        System.out.println("Opening URL: " + url);
+//        driver.get(url);
+//
+//        // Wait for the login header using the locator from LoginPage.java
+//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+//
+//        // Assert the login header is displayed
+//        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+//        System.out.println("Login page loaded successfully.");
+//    }
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
-        //"https://dev-robin-uae.santechture.com/ROBIN/";
+        String baseUrl = "https://dev-robin-uae.santechture.com/ROBIN/";
+        String accessToken = System.getProperty("accessToken"); // Passed from CI/CD via -DaccessToken
 
+        // Log token status for debugging
+        if (accessToken != null && !accessToken.isEmpty()) {
+            System.out.println("Using access token: " + accessToken);
+        } else {
+            System.out.println("Warning: No access token provided. Redirect may occur.");
+        }
 
-        // ✅ Wait for page to fully load
-        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
-                webDriver -> ((JavascriptExecutor) webDriver)
-                        .executeScript("return document.readyState").equals("complete"));
+        // Navigate to the base URL
+        System.out.println("Opening URL: " + baseUrl);
+        driver.get(baseUrl);
 
-        System.out.println("Opening URL: " + url);
-        driver.get(url);
+        // If token is available, inject it to bypass Keycloak redirect
+        if (accessToken != null && !accessToken.isEmpty()) {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            // Inject token into localStorage (adjust based on your app's requirements)
+            js.executeScript("localStorage.setItem('access_token', '" + accessToken + "');");
+            // Reload the page to apply the token
+            driver.get(baseUrl);
+            System.out.println("Reloaded with token. Current URL: " + driver.getCurrentUrl());
+        }
 
-        // Wait for the login header using the locator from LoginPage.java
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+        try {
+            // Wait for page to fully load
+            new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+                    webDriver -> ((JavascriptExecutor) webDriver)
+                            .executeScript("return document.readyState").equals("complete"));
 
-        // Assert the login header is displayed
-        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
-        System.out.println("Login page loaded successfully.");
-    }
+            // Wait for the login header with a longer timeout
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
 
+            // Assert the login header is displayed
+            Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+            System.out.println("Login page loaded successfully.");
+        } catch (Exception e) {
+            // Log detailed error info for CI/CD debugging
+            System.err.println("Error loading login page: " + e.getMessage());
+            System.err.println("Current URL after failure: " + driver.getCurrentUrl());
+            System.err.println("Page source snippet: " + driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
+            throw e; // Fail the test
+        }
+    }   
     @When("I enter username and password")
     public void enterUsernameAndPassword() {
         LoginPage loginPage = new LoginPage(DriverManager.getDriver());
