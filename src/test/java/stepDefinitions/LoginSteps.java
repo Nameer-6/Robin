@@ -30,27 +30,68 @@ public class LoginSteps {
     }
 
 
+//    @Given("I am on the login page")
+//    public void iAmOnTheLoginPage() {
+//        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+//        //"https://dev-robin-uae.santechture.com/ROBIN/";
+//
+//
+//        // ✅ Wait for page to fully load
+//        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+//                webDriver -> ((JavascriptExecutor) webDriver)
+//                        .executeScript("return document.readyState").equals("complete"));
+//
+//        System.out.println("Opening URL: " + url);
+//        driver.get(url);
+//
+//        // Wait for the login header using the locator from LoginPage.java
+//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+//
+//        // Assert the login header is displayed
+//        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+//        System.out.println("Login page loaded successfully.");
+//    }
+
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
-        //"https://dev-robin-uae.santechture.com/ROBIN/";
+        String baseUrl = "https://dev-robin-uae.santechture.com/ROBIN/";
+        String accessToken = System.getProperty("accessToken"); // Get token from Maven -DaccessToken
 
+        // Build URL with token if available
+        String url = baseUrl;
+        if (accessToken != null && !accessToken.isEmpty()) {
+            // Append token as a query parameter (adjust based on your app's requirements)
+            url = baseUrl + "?access_token=" + accessToken;
+            System.out.println("Using URL with token: " + url);
+        } else {
+            System.out.println("No access token provided. Using base URL: " + url);
+        }
 
-        // ✅ Wait for page to fully load
-        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
-                webDriver -> ((JavascriptExecutor) webDriver)
-                        .executeScript("return document.readyState").equals("complete"));
-
+        // Navigate to the URL
         System.out.println("Opening URL: " + url);
         driver.get(url);
 
-        // Wait for the login header using the locator from LoginPage.java
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+        try {
+            // Wait for page to fully load
+            new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+                    webDriver -> ((JavascriptExecutor) webDriver)
+                            .executeScript("return document.readyState").equals("complete"));
 
-        // Assert the login header is displayed
-        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
-        System.out.println("Login page loaded successfully.");
+            // Wait for the login header using the locator from LoginPage.java
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // Increased timeout
+            wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+
+            // Assert the login header is displayed
+            Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+            System.out.println("Login page loaded successfully.");
+        } catch (Exception e) {
+            // Log additional details for debugging
+            System.err.println("Error loading login page: " + e.getMessage());
+            System.err.println("Current URL: " + driver.getCurrentUrl());
+            System.err.println("Page source snippet: " + driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
+            throw e; // Re-throw to fail the test
+        }
     }
 
     @When("I enter username and password")
