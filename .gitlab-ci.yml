@@ -1,15 +1,36 @@
 stages:
+  - auth
   - test
   - report
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+authenticate:
+  stage: auth
+  image: eclipse-temurin:20-jdk
+  before_script:
+    - apt-get update && apt-get install -y curl jq
+  script:
+    - bash fetch-token.sh
+  artifacts:
+    paths:
+      - variables.sh
+    expire_in: 1 hour
 
 run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
+  needs:
+    - job: authenticate
+      artifacts: true
   before_script:
-    - apt-get update && apt-get install -y maven
+    - apt-get update && apt-get install -y maven curl chromium chromium-driver
+    - source variables.sh || { echo "❌ Token not found, exiting"; exit 1; }
   script:
-    - echo "🧪 Running login.feature test from resources/Features..."
-    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
+    - export CHROME_BIN=/usr/bin/chromium
+    - echo "🧪 Running login.feature test with obtained token..."
+    - mvn clean test "-DsuiteXmlFile=testng.xml" "-DaccessToken=$ACCESS_TOKEN"
     - ls -lah target/
   artifacts:
     when: always
@@ -21,18 +42,16 @@ run_login_feature:
 generate_report:
   stage: report
   image: eclipse-temurin:20-jdk
+  needs:
+    - job: run_login_feature
+      artifacts: true
   before_script:
     - apt-get update && apt-get install -y maven
   script:
     - echo "📊 Generating enhanced HTML report..."
-    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator" || true
-  dependencies:
-    - run_login_feature
+    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator"
   artifacts:
     when: always
     paths:
       - target/enhanced-report/
     expire_in: 1 week
-
-
-
