@@ -29,60 +29,61 @@ public class LoginSteps {
         loginPage = new LoginPage(driver);
     }
 
-//
-//    @Given("I am on the login page")
-//    public void iAmOnTheLoginPage() {
-//        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
-//        //"https://dev-robin-uae.santechture.com/ROBIN/";
-//
-//
-//        // ✅ Wait for page to fully load
-//        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
-//                webDriver -> ((JavascriptExecutor) webDriver)
-//                        .executeScript("return document.readyState").equals("complete"));
-//
-//        System.out.println("Opening URL: " + url);
-//        driver.get(url);
-//
-//        // Wait for the login header using the locator from LoginPage.java
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
-//
-//        // Assert the login header is displayed
-//        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
-//        System.out.println("Login page loaded successfully.");
-//    }
 
     @Given("I am on the login page")
     public void iAmOnTheLoginPage() {
-        String baseUrl = "https://dev-robin-uae.santechture.com/ROBIN/";
-        String accessToken = System.getProperty("accessToken"); // Passed from CI/CD via -DaccessToken
+        String url = "https://dev-robin-uae.santechture.com/ROBIN/";
+        //"https://dev-robin-uae.santechture.com/ROBIN/";
 
-        // Log token status for debugging
-        if (accessToken == null || accessToken.isEmpty()) {
-            throw new RuntimeException("Access token not provided!");
-        } else {
-            System.out.println("Using access token: " + accessToken);
-        }
 
-        driver.get(baseUrl);
+        // ✅ Wait for page to fully load
+        new WebDriverWait(driver, Duration.ofSeconds(60)).until(
+                webDriver -> ((JavascriptExecutor) webDriver)
+                        .executeScript("return document.readyState").equals("complete"));
 
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(String.format("window.localStorage.setItem('access_token', '%s');", accessToken));
+        System.out.println("Opening URL: " + url);
+        driver.get(url);
 
-        driver.navigate().refresh();  // Refresh to apply token and bypass login
+        // Wait for the login header using the locator from LoginPage.java
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
 
-        try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
-
-            Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
-            System.out.println("✅ Successfully logged in with token.");
-        } catch (Exception e) {
-            System.err.println("❌ Error loading login page: " + e.getMessage());
-            throw e;
-        }
+        // Assert the login header is displayed
+        Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+        System.out.println("Login page loaded successfully.");
     }
+
+
+//    @Given("I am on the login page")
+//    public void iAmOnTheLoginPage() {
+//        String baseUrl = "https://dev-robin-uae.santechture.com/ROBIN/";
+//        String accessToken = System.getProperty("accessToken"); // Passed from CI/CD via -DaccessToken
+//
+//        // Log token status for debugging
+//        if (accessToken == null || accessToken.isEmpty()) {
+//            throw new RuntimeException("Access token not provided!");
+//        } else {
+//            System.out.println("Using access token: " + accessToken);
+//        }
+//
+//        driver.get(baseUrl);
+//
+//        JavascriptExecutor js = (JavascriptExecutor) driver;
+//        js.executeScript(String.format("window.localStorage.setItem('access_token', '%s');", accessToken));
+//
+//        driver.navigate().refresh();  // Refresh to apply token and bypass login
+//
+//        try {
+//            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+//            wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getLoginHeaderLocator()));
+//
+//            Assert.assertTrue(loginPage.isLoginHeaderDisplayed(), "Login header is NOT displayed!");
+//            System.out.println("✅ Successfully logged in with token.");
+//        } catch (Exception e) {
+//            System.err.println("❌ Error loading login page: " + e.getMessage());
+//            throw e;
+//        }
+//    }
 
     @When("I enter username and password")
     public void enterUsernameAndPassword() {
