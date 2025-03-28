@@ -43,13 +43,16 @@ stages:
 authenticate:
   stage: auth
   image: eclipse-temurin:20-jdk
-  script:
+  before_script:
     - apt-get update && apt-get install -y curl jq
+  script:
     - echo "🔑 Fetching Keycloak token..."
     - RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "https://dev-keycloak.santechture.com/realms/QATAR/protocol/openid-connect/token" -d "grant_type=password" -d "client_id=robin-qtr" -d "client_secret=$KEYCLOAK_CLIENT_SECRET" -d "username=$KEYCLOAK_USERNAME" -d "password=$KEYCLOAK_PASSWORD" 2>&1)
+    - echo "Keycloak response: $RESPONSE"
     - HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
     - TOKEN=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d' | jq -r '.access_token')
     - if [ "$HTTP_STATUS" -ne 200 ] || [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then echo "❌ Token fetch failed: $RESPONSE"; exit 1; fi
+    - echo "✅ Token obtained: $TOKEN"
     - echo "export ACCESS_TOKEN=$TOKEN" > variables.sh
   artifacts:
     paths:

@@ -99,7 +99,7 @@ public class LoginSteps {
             System.err.println("Page source snippet: " + driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
             throw e; // Fail the test
         }
-    }   
+    }
     @When("I enter username and password")
     public void enterUsernameAndPassword() {
         LoginPage loginPage = new LoginPage(DriverManager.getDriver());
