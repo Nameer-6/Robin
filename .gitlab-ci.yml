@@ -1,87 +1,16 @@
-#stages:
-#  - test
-#  - report
-#
-#run_login_feature:
-#  stage: test
-#  image: eclipse-temurin:20-jdk
-#  before_script:
-#    - apt-get update && apt-get install -y maven
-#  script:
-#    - echo "🧪 Running login.feature test from resources/Features..."
-#    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
-#    - ls -lah target/
-#  artifacts:
-#    when: always
-#    paths:
-#      - target/cucumber.json
-#      - target/surefire-reports/
-#    expire_in: 1 week
-#
-#generate_report:
-#  stage: report
-#  image: eclipse-temurin:20-jdk
-#  before_script:
-#    - apt-get update && apt-get install -y maven
-#  script:
-#    - echo "📊 Generating enhanced HTML report..."
-#    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator" || true
-#  dependencies:
-#    - run_login_feature
-#  artifacts:
-#    when: always
-#    paths:
-#      - target/enhanced-report/
-#    expire_in: 1 week
-
 stages:
-  - auth
   - test
   - report
-
-authenticate:
-  stage: auth
-  image: eclipse-temurin:20-jdk
-  before_script:
-    - apt-get update && apt-get install -y curl jq
-  script:
-    - echo "🔑 Authenticating with Keycloak..."
-    - echo "Checking network reachability..."
-    - curl -sI https://dev-keycloak.santechture.com || echo "⚠️ Cannot reach Keycloak server"
-    - echo "Variables: username=$KEYCLOAK_USERNAME, client_secret length=${#KEYCLOAK_CLIENT_SECRET}"
-    - echo "Attempting to fetch token..."
-    - RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "https://dev-keycloak.santechture.com/realms/QATAR/protocol/openid-connect/token" -d "grant_type=password" -d "client_id=robin-qtr" -d "client_secret=$KEYCLOAK_CLIENT_SECRET" -d "username=$KEYCLOAK_USERNAME" -d "password=$KEYCLOAK_PASSWORD" 2>&1)
-    - echo "Keycloak response: $RESPONSE"
-    - HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
-    - TOKEN=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d' | jq -r '.access_token')
-    - if [ -z "$HTTP_STATUS" ]; then echo "❌ Curl failed to execute properly"; exit 1; fi
-    - if [ "$HTTP_STATUS" -ne 200 ] || [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
-      echo "❌ Failed to obtain access token. HTTP Status: $HTTP_STATUS"
-      echo "Full response: $RESPONSE"
-      exit 1
-      fi
-    - echo "✅ Token obtained successfully: $TOKEN"
-    - echo "export ACCESS_TOKEN=$TOKEN" > variables.sh
-  artifacts:
-    paths:
-      - variables.sh
-    expire_in: 1 week
 
 run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
   before_script:
-    - apt-get update && apt-get install -y maven curl chromium chromium-driver
-    - source variables.sh || echo "No variables.sh found, proceeding without token"
+    - apt-get update && apt-get install -y maven
   script:
-    - echo "🌐 Checking URL reachability..."
-    - curl -I https://dev-robin-uae.santechture.com/ROBIN/ || echo "⚠️ URL is unreachable, continuing anyway..."
     - echo "🧪 Running login.feature test from resources/Features..."
-    - export CHROME_BIN=/usr/bin/chromium
-    - mvn clean test "-DsuiteXmlFile=testng.xml" "-DaccessToken=$ACCESS_TOKEN" || true
+    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
     - ls -lah target/
-  dependencies:
-    - authenticate
   artifacts:
     when: always
     paths:
@@ -105,7 +34,3 @@ generate_report:
       - target/enhanced-report/
     expire_in: 1 week
 
-variables:
-  KEYCLOAK_USERNAME: "$KEYCLOAK_USERNAME"
-  KEYCLOAK_PASSWORD: "$KEYCLOAK_PASSWORD"
-  KEYCLOAK_CLIENT_SECRET: "$KEYCLOAK_CLIENT_SECRET"
