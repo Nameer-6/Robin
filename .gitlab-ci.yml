@@ -46,8 +46,11 @@ generate_report:
     - job: run_login_feature
       artifacts: true
   before_script:
+    - apt-get update && apt-get install -y curl jq
     - apt-get update && apt-get install -y maven
   script:
+    - echo "🔍 Debugging network connectivity from GitLab Runner..."
+    - curl -v --connect-timeout 10 https://dev-keycloak.santechture.com
     - echo "📊 Generating enhanced HTML report..."
     - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator"
   artifacts:
