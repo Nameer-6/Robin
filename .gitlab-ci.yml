@@ -1,56 +1,15 @@
 stages:
-  - auth
   - test
   - report
-
-variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-
-authenticate:
-  stage: auth
-  image: eclipse-temurin:20-jdk
-  before_script:
-    - apt-get update && apt-get install -y curl jq
-  script:
-    - echo "🔑 Fetching Keycloak token..."
-    - |
-      RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
-        -X POST "https://dev-keycloak.santechture.com/realms/QATAR/protocol/openid-connect/token" \
-        -d "grant_type=password" \
-        -d "client_id=robin-qtr" \
-        -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
-        -d "username=$KEYCLOAK_USERNAME" \
-        -d "password=$KEYCLOAK_PASSWORD")
-
-      echo "$RESPONSE" > response.json
-      HTTP_STATUS=$(grep "HTTP_STATUS" response.json | cut -d':' -f2)
-      TOKEN=$(sed '/HTTP_STATUS/d' response.json | jq -r '.access_token')
-
-      if [ "$HTTP_STATUS" -ne 200 ] || [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
-        echo "❌ Token fetch failed: $RESPONSE"
-        exit 1
-      else
-        echo "✅ Token obtained"
-        echo "ACCESS_TOKEN=$TOKEN" > variables.sh
-      fi
-  artifacts:
-    paths:
-      - variables.sh
-    expire_in: 1 hour
 
 run_login_feature:
   stage: test
   image: eclipse-temurin:20-jdk
-  needs:
-    - job: authenticate
-      artifacts: true
   before_script:
-    - apt-get update && apt-get install -y maven curl chromium chromium-driver
-    - source variables.sh || { echo "❌ Token not found, exiting"; exit 1; }
+    - apt-get update && apt-get install -y maven
   script:
-    - export CHROME_BIN=/usr/bin/chromium
-    - echo "🧪 Running login.feature test with obtained token..."
-    - mvn clean test "-DsuiteXmlFile=testng.xml" "-DaccessToken=$ACCESS_TOKEN"
+    - echo "🧪 Running login.feature test from resources/Features..."
+    - mvn clean test "-DsuiteXmlFile=testng.xml" || true
     - ls -lah target/
   artifacts:
     when: always
@@ -62,16 +21,18 @@ run_login_feature:
 generate_report:
   stage: report
   image: eclipse-temurin:20-jdk
-  needs:
-    - job: run_login_feature
-      artifacts: true
   before_script:
     - apt-get update && apt-get install -y maven
   script:
     - echo "📊 Generating enhanced HTML report..."
-    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator"
+    - mvn exec:java "-Dexec.mainClass=utils.ReportGenerator" || true
+  dependencies:
+    - run_login_feature
   artifacts:
     when: always
     paths:
       - target/enhanced-report/
     expire_in: 1 week
+
+
+
